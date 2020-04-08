@@ -1,0 +1,27 @@
+{
+    "name": "fakhrani/digilara",
+    "description": "Package for checking update for digilara project.",
+    "authors": [
+        {
+            "name": "Mohammad Fakhrani",
+            "email": "mohammad.fakhrani@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "zanysoft/laravel-zip": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fakhrani\\Digilara\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fakhrani\\Digilara\\FakhraniDigilaraServiceProvider"
+            ]
+        }
+    }
+}
