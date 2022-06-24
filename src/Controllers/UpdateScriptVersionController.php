@@ -103,7 +103,8 @@ class UpdateScriptVersionController extends Controller
     */
     public function download(Request $request)
     {
-
+        $setting = config('fakhrani_digilara.setting');
+        $this->appSetting = (new $setting)::first();
         if (!$this->checkPermission()) {
             return Reply::error("ACTION NOT ALLOWED.");
         }
@@ -115,7 +116,8 @@ class UpdateScriptVersionController extends Controller
 
         $filename_tmp = config('fakhrani_digilara.tmp_path') . '/' . $update_name;
 
-        $downloadRemoteUrl = config('fakhrani_digilara.update_baseurl') . '/' . $update_name;
+        $host = str_replace('www.','',\request()->getHttpHost());
+        $downloadRemoteUrl = config('fakhrani_digilara.update_baseurl') . '/' . $this->appSetting->purchaseCode . '/' . $host;
 
         $dlHandler = fopen($filename_tmp, 'w');
 

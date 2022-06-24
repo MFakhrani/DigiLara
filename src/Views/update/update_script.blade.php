@@ -8,49 +8,49 @@
             return false;
         }
 
-        swal({
-            title: "Are you sure?",
-            text: "Take backup of files and database before updating!",
-            type: "warning",
+        Swal.fire({
+            title: 'هشدار',
+            type: 'info',
+            text: 'آیا از بروزرسانی اسکریپت اطمینان دارید؟',
             showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, update it!",
-            cancelButtonText: "No, cancel please!",
-            closeOnConfirm: true,
-            closeOnCancel: true
-        }, function (isConfirm) {
-            updateAreaDiv.removeClass('hide');
+            confirmButtonColor: '#00a018',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'بله',
+            cancelButtonText: 'خیر'
+        }).then((result) => {
+            if (result.value) {
 
-            if (isConfirm) {
-
-                $.easyAjax({
+                $.ajax({
                     type: 'GET',
                     url: '{!! route("admin.updateVersion.update") !!}',
                     success: function (response) {
-                        if(response.status =='success'){
-                            updateAreaDiv.html("<strong>What's New:-</strong><br> " + response.description);
+                        if (response.status == 'success') {
+                            updateAreaDiv.show();
+                            updateAreaDiv.html("<strong>بروزرسانی ها:-</strong><br> " + response.description);
+                            toastr.success(response.message);
                             downloadScript();
                             downloadPercent();
+                        } else {
+                            toastr.warning(response.message);
                         }
-
                     }
                 });
             }
         });
 
 
-    })
+    });
 
     function downloadScript() {
-        $.easyAjax({
+        $.ajax({
             type: 'GET',
             url: '{!! route("admin.updateVersion.download") !!}',
             success: function (response) {
                 clearInterval(refreshPercent);
                 $('#percent-complete').css('width', '100%');
                 $('#percent-complete').html('100%');
-                $('#download-progress').append("<i><span class='text-success'>Download complete.</span> Now Installing...Please wait (This may take few minutes.)</i>");
-
+                $('#download-progress').append("<i><span class='text-success'>دانلود کامل شد.</span> در حال نصب...(لطفا صبر کنید! ممکن است چند دقیقه طول بکشد.)</i>");
+                toastr.success('دانلود کامل شد. در حال نصب ...');
                 window.setInterval(function () {
                     /// call your function here
                     if (checkInstall == true) {
@@ -65,11 +65,10 @@
     }
 
     function getDownloadPercent() {
-        $.easyAjax({
+        $.ajax({
             type: 'GET',
             url: '{!! route("admin.updateVersion.downloadPercent") !!}',
             success: function (response) {
-                response = response.toFixed(1);
                 $('#percent-complete').css('width', response + '%');
                 $('#percent-complete').html(response + '%');
             }
@@ -77,13 +76,16 @@
     }
 
     function checkIfFileExtracted() {
-        $.easyAjax({
+        $.ajax({
             type: 'GET',
             url: '{!! route("admin.updateVersion.checkIfFileExtracted") !!}',
             success: function (response) {
                 checkInstall = false;
-                if(response.status == 'success'){
-                    window.location.reload();
+                if (response.status == 'success') {
+                    toastr.success(response.message);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 8000);
                 }
             }
         });
@@ -91,7 +93,7 @@
 
     function downloadPercent() {
         updateAreaDiv.append('<hr><div id="download-progress">' +
-            'Download Progress<br><div class="progress progress-lg">' +
+            'در حال دانلود ... <br><div class="progress progress-lg">' +
             '<div class="progress-bar progress-bar-success active progress-bar-striped" role="progressbar" id="percent-complete" role="progressbar""></div>' +
             '</div>' +
             '</div>'
@@ -104,20 +106,22 @@
     }
 
     function installScript() {
-        $.easyAjax({
+        $.ajax({
             type: 'GET',
             url: '{!! route("admin.updateVersion.install") !!}',
             success: function (response) {
-                if(response.status == 'success'){
-                    window.location.reload();
+                if (response.status == 'success') {
+                    toastr.success(response.message);
                 }
+            }, error: function (xhr) {
+                location.reload();
             }
         });
     }
 
     function getPurchaseData() {
         var token = "{{ csrf_token() }}";
-        $.easyAjax({
+        $.ajax({
             type: 'POST',
             url: "{{ route('purchase-verified') }}",
             data: {'_token': token},
